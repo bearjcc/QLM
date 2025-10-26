@@ -33,24 +33,24 @@ except Exception as e:
 
 print("\n")
 
-# Test 2: Rick Roll trigger
-print("Test 2: Rick Roll trigger")
+# Test 2: Varied duck responses
+print("Test 2: Multiple requests for variety")
 print("=" * 60)
 
-data_rick = {
-    "model": "quack-model",
-    "messages": [
-        {"role": "user", "content": "I love rick and roll music"}
-    ]
-}
-
-try:
-    response = requests.post(url, headers=headers, json=data_rick)
-    print(f"Status Code: {response.status_code}")
-    result = response.json()
-    print(f"Response content: {result['choices'][0]['message']['content']}")
-except Exception as e:
-    print(f"Error: {e}")
+for i in range(3):
+    data_test = {
+        "model": "quack-model",
+        "messages": [
+            {"role": "user", "content": f"Test message {i+1}"}
+        ]
+    }
+    
+    try:
+        response = requests.post(url, headers=headers, json=data_test)
+        result = response.json()
+        print(f"Request {i+1}: {result['choices'][0]['message']['content']}")
+    except Exception as e:
+        print(f"Error: {e}")
 
 print("\n")
 
