@@ -120,12 +120,6 @@ QLM generates responses based on realistic duck sound probabilities:
 | Quack quack | 3% | Polite double |
 | Other variants | 8% | Various creative combinations |
 
-### Rick Roll Easter Egg
-
-The API includes a hidden deterministic easter egg! If your input's base64 encoding contains certain trigger substrings (like "ric", "abc", "xyz", etc.), you'll get the full lyrics of "Never Gonna Give You Up" instead of duck sounds. This is completely deterministic and hidden from the public documentation.
-
-**How it works:** Input text → base64 encoding → substring check → Rick Roll lyrics if triggered!
-
 ### Duck Thinking Feature
 
 Enable duck-themed thinking messages by setting `quack_thinking: true` in your request:
