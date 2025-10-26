@@ -328,4 +328,4 @@ MIT License - feel free to use in your projects!
 
 **Made with 🦆 and lots of quacks by BearJCC**
 
-*Sometimes the best debugging tool is a duck that agrees with everything you say...*
+*"Rubber Duckie, you're the one..." — Inspired by Ernie's timeless wisdom*
