@@ -13,14 +13,16 @@ QLM (Quack Language Model) is an API-compatible service that mimics OpenAI's API
 - **Educational purposes**: Understanding API compatibility
 - **Humor**: Bringing joy to debugging sessions
 - **Testing**: Mock API responses for development
-- **Easter eggs**: Hidden surprises for dedicated users
+- **Varied Responses**: Multiple duck sound variations
 
 ## Features
 
-- ✅ **OpenAI API Compatible**: Drop-in replacement for testing
-- ✅ **Fast & Secure**: Cryptographically secure random generation
-- ✅ **Varied Responses**: 13+ different duck sounds with realistic probabilities
-- ✅ **Hidden Easter Egg**: Ultra-rare response (0.001% chance)
+- ✅ **OpenAI API Compatible**: Full compatibility with `/v1/*` endpoints
+- ✅ **API Key Authentication**: Secure authentication with duck-themed keys (`sk-v1-42...`)
+- ✅ **Duck Reasoning**: `reasoning_effort` parameter for OpenAI-compatible reasoning
+- ✅ **Multiple Models**: Standard (`quack-model`) and reasoning (`reasoning-duck`) models
+- ✅ **Rich Duck Emojis**: 24+ different duck sounds, emojis, and combinations
+- ✅ **Base64 Easter Eggs**: Hidden deterministic easter eggs based on input encoding
 - ✅ **Web Interface**: Interactive demo via GitHub Pages
 - ✅ **Production Ready**: CORS support, error handling, logging
 
@@ -41,13 +43,28 @@ cd api
 python main.py
 ```
 
-3. **Test the API:**
+3. **Test the API (requires authentication):**
 ```bash
 curl -X POST http://localhost:8000/chat/completions \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-v1-42your-api-key-here" \
   -d '{
     "model": "quack-model",
     "messages": [{"role": "user", "content": "Hello!"}]
+  }'
+```
+
+**⚠️ Authentication Required:** All API endpoints require an API key starting with `sk-v1-42`. Requests without proper authentication will return a 401 error.
+
+**With Reasoning:**
+```bash
+curl -X POST http://localhost:8000/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-v1-42your-api-key-here" \
+  -d '{
+    "model": "reasoning-duck",
+    "messages": [{"role": "user", "content": "Help debug this code!"}],
+    "reasoning_effort": "high"
   }'
 ```
 
@@ -82,18 +99,66 @@ QLM generates responses based on realistic duck sound probabilities:
 
 | Sound | Probability | Description |
 |-------|-------------|-------------|
-| quack | 30% | Standard duck sound |
-| Quack | 30% | Capitalized variant |
-| Quack! | 10% | Enthusiastic quack |
-| quack quack | 8% | Double quack |
-| QUACK | 5% | Loud quack |
-| quack! | 5% | Excited quack |
-| Quack quack | 4% | Polite double |
-| Other variants | ~8% | Various creative combinations |
+| quack | 26% | Standard duck sound |
+| Quack | 29% | Capitalized variant |
+| Quack! | 8% | Enthusiastic quack |
+| 🦆 | 5% | Standard duck emoji |
+| 🦆💦 | 1% | Splashing duck |
+| 🦆💧 | 1% | Duck with water drop |
+| 🦆👑 | 0.2% | Duck royalty |
+| 🦆🎩 | 0.2% | Fancy duck |
+| 🦆🔥 | 0.2% | Fiery duck |
+| 🦆🕊️ | 0.2% | Peace duck |
+| 🦆🪿 | 0.2% | Duck and goose |
+| 🦆🫧 | 1% | Bubbly duck |
+| 🦆🌊 | 1% | Wave rider duck |
+| 🦆🏊 | 1% | Swimming duck |
+| 🦆🛟 | 1% | Lifeguard duck |
+| quack quack | 6% | Double quack |
+| QUACK | 4% | Loud quack |
+| quack! | 4% | Excited quack |
+| Quack quack | 3% | Polite double |
+| Other variants | 8% | Various creative combinations |
 
-**Hidden Response (< 0.001%)**: There's an ultra-rare easter egg that might surprise you!
+### Rick Roll Easter Egg
+
+The API includes a hidden deterministic easter egg! If your input's base64 encoding contains certain trigger substrings (like "ric", "abc", "xyz", etc.), you'll get the full lyrics of "Never Gonna Give You Up" instead of duck sounds. This is completely deterministic and hidden from the public documentation.
+
+**How it works:** Input text → base64 encoding → substring check → Rick Roll lyrics if triggered!
+
+### Duck Thinking Feature
+
+Enable duck-themed thinking messages by setting `quack_thinking: true` in your request:
+
+**Example Response with Thinking:**
+```json
+{
+  "choices": [{
+    "message": {
+      "content": "🦆💦 splash... quack... splash...\n\n🦆🫧",
+      "role": "assistant"
+    }
+  }]
+}
+```
+
+**Available Thinking Messages:**
+- `🦆💦 splash... quack... splash...`
+- `🦆💭 Hmm... bread? No. Let's think about this...`
+- `🦆🫧 *bubbling thoughts*`
+- `🦆🔍 *inspecting the pond*`
+- And 11 more silly duck-themed thinking variations!
+
+The system uses cryptographically secure random generation to ensure fair distribution of all duck sounds.
+
+## Available Models
+
+- **`quack-model`**: Standard duck responses with basic functionality
+- **`reasoning-duck`**: Advanced model with reasoning capabilities and enhanced responses
 
 ## API Endpoints
+
+All endpoints require authentication with an API key starting with `sk-v1-42`.
 
 ### Chat Completions (OpenAI Compatible)
 ```
@@ -107,7 +172,37 @@ Standard OpenAI chat completion format with duck responses.
   "model": "quack-model",
   "messages": [
     {"role": "user", "content": "Your message here"}
-  ]
+  ],
+  "reasoning_effort": "medium",  // Optional: "low", "medium", "high"
+  "quack_thinking": true         // Optional: Enable duck-themed thinking messages
+}
+```
+
+**Authentication:**
+```
+Authorization: Bearer sk-v1-42your-api-key-here
+```
+
+**Response (Reasoning Model):**
+```json
+{
+  "id": "chatcmpl-abc123",
+  "object": "chat.completion",
+  "model": "reasoning-duck",
+  "choices": [{
+    "message": {
+      "content": "🦆🔬 *conducting aquatic research...*\n\n🦆",
+      "role": "assistant"
+    },
+    "reasoning": "🦆🔬 *conducting aquatic research...*",
+    "finish_reason": "stop"
+  }],
+  "usage": {
+    "prompt_tokens": 3,
+    "completion_tokens": 5,
+    "reasoning_tokens": 4,
+    "total_tokens": 12
+  }
 }
 ```
 
@@ -138,6 +233,21 @@ Standard OpenAI chat completion format with duck responses.
 POST /completions
 ```
 Backwards compatible with older OpenAI API format.
+
+**Request:**
+```json
+{
+  "model": "quack-model",
+  "prompt": "Your message here",
+  "reasoning_effort": "high",  // Optional: "low", "medium", "high"
+  "quack_thinking": true       // Optional: Enable duck-themed thinking messages
+}
+```
+
+**Authentication:**
+```
+Authorization: Bearer sk-v1-42your-api-key-here
+```
 
 ### Health Check
 ```
@@ -209,8 +319,6 @@ pytest tests/
 3. Make your changes
 4. Add tests if applicable
 5. Submit a pull request
-
-**Note**: The easter egg is intentionally undocumented - discover it yourself! 🦆
 
 ## License
 

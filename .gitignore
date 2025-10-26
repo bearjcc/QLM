@@ -60,3 +60,10 @@ htmlcov/
 
 # Jupyter Notebook
 .ipynb_checkpoints
+
+# Internal validation tests
+tests/validation/
+
+# Development utility scripts
+find_rick_collision.py
+generate_base64.py

@@ -1,0 +1,101 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run public tests
+      run: |
+        python -m pytest tests/ -v --tb=short -k "not private"
+
+    - name: Test API endpoints
+      run: |
+        # Start the API server in background
+        python -m uvicorn api.main:app --host 0.0.0.0 --port 8000 &
+        sleep 5
+
+        # Test basic endpoints
+        curl -f http://localhost:8000/health
+        curl -f http://localhost:8000/models
+
+        # Test chat completions
+        curl -f -X POST http://localhost:8000/chat/completions \
+          -H "Content-Type: application/json" \
+          -d '{"model": "quack-model", "messages": [{"role": "user", "content": "test"}]}'
+
+        # Test legacy completions
+        curl -f -X POST http://localhost:8000/completions \
+          -H "Content-Type: application/json" \
+          -d '{"model": "quack-model", "prompt": "test"}'
+
+        echo "All API tests passed!"
+
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install linting tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 black isort
+
+    - name: Check code formatting
+      run: |
+        # Check if code is properly formatted
+        black --check --diff api/ tests/
+        isort --check-only --diff api/ tests/
+
+    - name: Lint code
+      run: |
+        flake8 api/ tests/ --max-line-length=100 --ignore=E203,W503
+
+  security:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Check for secrets in code
+      run: |
+        # Ensure no secrets are accidentally committed
+        echo "Checking for potential secrets in code..."
+
+        # Check for common secret patterns (excluding test files)
+        if grep -r "password\|secret\|key\|token\|api_key" api/ --include="*.py" | grep -v "# test\|# example\|# mock"; then
+          echo "Potential secrets found in code!"
+          exit 1
+        fi
+
+        # Check that private tests are not included
+        if [ -d "tests/private" ]; then
+          echo "ERROR: Private tests directory should not be committed!"
+          exit 1
+        fi
+
+        echo "Security checks passed!"

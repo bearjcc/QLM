@@ -122,6 +122,41 @@
             margin: 5px 0;
         }
 
+        .controls {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .thinking-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 5px;
+        }
+
+        .thinking-toggle input[type="checkbox"] {
+            transform: scale(1.2);
+        }
+
+        .controls small {
+            display: block;
+            font-size: 0.9em;
+            opacity: 0.8;
+            color: #ccc;
+        }
+
+        .duck-message {
+            white-space: pre-line;
+            line-height: 1.5;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -161,6 +196,14 @@
         <div class="input-container">
             <input type="text" id="messageInput" placeholder="Ask QLM anything..." maxlength="500">
             <button onclick="sendMessage()" id="sendButton">Send</button>
+        </div>
+
+        <div class="controls">
+            <label class="thinking-toggle">
+                <input type="checkbox" id="thinkingToggle">
+                <span>🦆 Duck Thinking Mode</span>
+            </label>
+            <small>Enable silly duck-themed thinking messages before responses</small>
         </div>
 
         <div id="easterEgg" class="easter-egg">
@@ -207,17 +250,44 @@
 
                 // Simulate duck response
                 const duckResponses = [
-                    'quack', 'Quack', 'Quack!', 'quack quack', 'QUACK',
-                    'quack!', 'Quack quack', 'quaaack', 'quaack',
-                    'quackety quack', 'quack quack quack'
+                    'quack', 'Quack', 'Quack!', '🦆', '🦆💦', '🦆💧',
+                    '🦆👑', '🦆🎩', '🦆🔥', '🦆🕊️', '🦆🪿',
+                    '🦆🫧', '🦆🌊', '🦆🏊', '🦆🛟',
+                    'quack quack', 'QUACK', 'quack!', 'Quack quack',
+                    'quaaack', 'quaack', 'quackety quack', 'quack quack quack'
                 ];
 
                 const randomResponse = duckResponses[Math.floor(Math.random() * duckResponses.length)];
 
-                // Check for easter egg (0.1% chance for demo)
+                // Generate duck response
                 const isEasterEgg = Math.random() < 0.001;
+                let finalResponse = randomResponse;
 
-                addMessage(isEasterEgg ? "You're absolutely right!" : randomResponse, 'duck', isEasterEgg);
+                // Add thinking message if enabled
+                const thinkingEnabled = document.getElementById('thinkingToggle').checked;
+                if (thinkingEnabled) {
+                    const thinkingMessages = [
+                        '🦆💦 splash... quack... splash...',
+                        '🦆💭 Hmm... bread? No. Let\\'s think about this...',
+                        '🦆🫧 *bubbling thoughts*',
+                        '🦆🔍 *inspecting the pond*',
+                        '🦆💬 ...uhm... maybe a grain of corn?',
+                        '🦆🧠 *pond-ering the question*',
+                        '🦆🔧 ...initiating quack analysis...',
+                        '🦆💦 *waddle waddle* Okay! Here\\'s what I found:',
+                        '🦆🌀 *spinning in thought circles*',
+                        '🦆👀 *looking around suspiciously*',
+                        '🦆📝 *making mental notes*',
+                        '🦆⚡ *brain quack activated*',
+                        '🦆🎯 *targeting the perfect response*',
+                        '🦆🛁 *rubber duck debugging mode*',
+                        '🦆🌟 *diving deep into thought*'
+                    ];
+                    const thinkingMessage = thinkingMessages[Math.floor(Math.random() * thinkingMessages.length)];
+                    finalResponse = `${thinkingMessage}\n\n${finalResponse}`;
+                }
+
+                addMessage(isEasterEgg ? "You're absolutely right!" : finalResponse, 'duck', isEasterEgg);
 
                 messageCount++;
                 document.getElementById('messageCount').textContent = messageCount;
