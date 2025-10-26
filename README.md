@@ -1,3 +1,13 @@
+---
+title: QLM - Quack Language Model
+emoji: 🦆
+colorFrom: purple
+colorTo: blue
+sdk: docker
+pinned: false
+license: mit
+---
+
 # QLM - Quack Language Model 🦆
 
 A humorous open-source project that brings the rubber duck back to debugging! QLM is a fake Large Language Model that responds to API requests with duck sounds instead of actual AI content.
