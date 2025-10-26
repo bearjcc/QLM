@@ -348,7 +348,7 @@ def generate_duck_response(model: str, prompt: str = "", reasoning_effort: str =
 
 @app.get("/")
 async def root():
-    """Root endpoint - serves HTML landing page"""
+    """Root endpoint - interactive chat demo"""
     from fastapi.responses import HTMLResponse
     
     html_content = """
@@ -364,72 +364,242 @@ async def root():
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(to bottom, #87CEEB 0%, #B0E0E6 50%, #F5F5DC 100%);
             min-height: 100vh;
         }
         .container {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
             padding: 30px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            color: #333;
         }
-        h1 { text-align: center; font-size: 3em; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); }
-        .subtitle { text-align: center; font-size: 1.2em; opacity: 0.9; margin-bottom: 30px; }
-        .duck-emoji { font-size: 4em; text-align: center; margin: 20px 0; }
-        .info { background: rgba(0, 0, 0, 0.2); border-radius: 10px; padding: 20px; margin: 20px 0; }
-        code { background: rgba(0, 0, 0, 0.3); padding: 2px 8px; border-radius: 4px; }
-        .endpoint { margin: 10px 0; padding: 10px; background: rgba(255, 255, 255, 0.1); border-radius: 5px; }
-        a { color: #ffd700; text-decoration: none; }
+        h1 { 
+            text-align: center; 
+            font-size: 2.5em; 
+            margin: 0; 
+            color: #2C5F7C;
+        }
+        .subtitle { 
+            text-align: center; 
+            font-size: 1.2em; 
+            color: #4682B4; 
+            margin: 5px 0 20px 0;
+            font-weight: 500;
+        }
+        .duck-emoji { font-size: 4em; text-align: center; margin: 10px 0 20px 0; }
+        
+        .chat-container {
+            background: #f9f9f9;
+            border: 2px solid #B0E0E6;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            min-height: 350px;
+            max-height: 450px;
+            overflow-y: auto;
+        }
+        .message {
+            margin: 12px 0;
+            padding: 12px 16px;
+            border-radius: 12px;
+            animation: fadeIn 0.3s;
+            max-width: 75%;
+        }
+        .user-message {
+            background: #E3F2FD;
+            margin-left: auto;
+            margin-right: 0;
+            text-align: right;
+        }
+        .duck-message {
+            background: #FFF9C4;
+            margin-right: auto;
+            margin-left: 0;
+            white-space: pre-line;
+        }
+        .input-container {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        input {
+            flex: 1;
+            padding: 14px 20px;
+            border: 2px solid #87CEEB;
+            border-radius: 25px;
+            font-size: 1em;
+            outline: none;
+        }
+        input:focus { border-color: #4682B4; }
+        button {
+            padding: 14px 32px;
+            border: none;
+            border-radius: 25px;
+            background: #4682B4;
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        button:hover { background: #2C5F7C; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        
+        .about {
+            background: #f0f8ff;
+            border: 1px solid #B0E0E6;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .about summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: #2C5F7C;
+            padding: 5px;
+            font-size: 1.05em;
+        }
+        .about summary:hover { color: #4682B4; }
+        .about-content { margin-top: 15px; line-height: 1.6; }
+        .about-content ul { margin: 10px 0; padding-left: 25px; }
+        .about-content li { margin: 5px 0; }
+        
+        code { 
+            background: #e8e8e8; 
+            padding: 2px 8px; 
+            border-radius: 4px; 
+            font-size: 0.9em;
+            color: #d63384;
+        }
+        .status { 
+            text-align: center; 
+            color: #666; 
+            font-size: 0.9em; 
+            margin: 10px 0;
+        }
+        a { color: #2C5F7C; text-decoration: none; font-weight: 500; }
         a:hover { text-decoration: underline; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🦆 QLM</h1>
-        <p class="subtitle">Quack Language Model API</p>
-        <div class="duck-emoji">🦆</div>
+        <p class="subtitle">Returning Rubber Duck Debugging to the Modern World</p>
         
-        <div class="info">
-            <h2>API Information</h2>
-            <p><strong>Version:</strong> 1.0.0</p>
-            <p><strong>Status:</strong> Running</p>
-            <p><strong>Description:</strong> OpenAI-compatible API that responds with duck sounds</p>
+        <div class="chat-container" id="chatContainer">
+            <div class="message duck-message">
+                <strong>QLM:</strong> Quack! Type a message below and I'll respond with duck sounds! 🦆
+            </div>
         </div>
         
-        <div class="info">
-            <h2>Available Endpoints</h2>
-            <div class="endpoint"><code>POST /chat/completions</code> - OpenAI-compatible chat</div>
-            <div class="endpoint"><code>GET /models</code> - List available models</div>
-            <div class="endpoint"><code>GET /health</code> - Health check</div>
+        <div class="input-container">
+            <input type="text" id="messageInput" placeholder="Ask me anything..." maxlength="500">
+            <button onclick="sendMessage()" id="sendButton">Send</button>
         </div>
         
-        <div class="info">
-            <h2>Quick Start</h2>
-            <p>Use with any OpenAI-compatible client:</p>
-            <pre style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 5px; overflow-x: auto;">
-curl -X POST http://localhost:8000/chat/completions \\
-  -H "Content-Type: application/json" \\
-  -H "Authorization: Bearer sk-v1-42test" \\
-  -d '{
-    "model": "quack-model",
-    "messages": [{"role": "user", "content": "Hello!"}]
-  }'</pre>
-        </div>
+        <div class="status" id="status">Ready</div>
         
-        <div class="info">
-            <h2>Links</h2>
-            <p><a href="https://github.com/bearjcc/QLM" target="_blank">📦 GitHub Repository</a></p>
-            <p><a href="https://bearjcc.github.io/QLM/" target="_blank">🌐 Interactive Demo</a></p>
-            <p><a href="/health">🏥 Health Check</a></p>
-            <p><a href="/models">📋 Available Models</a></p>
-        </div>
+        <details class="about">
+            <summary>📖 About QLM</summary>
+            <div class="about-content">
+                <p><strong>What is QLM?</strong> An OpenAI-compatible API that responds with duck sounds instead of AI content. Perfect for testing, humor, and bringing rubber duck debugging to life!</p>
+                
+                <p><strong>API Endpoints:</strong></p>
+                <ul>
+                    <li><code>POST /chat/completions</code> - OpenAI-compatible chat endpoint</li>
+                    <li><code>GET /models</code> - List available models</li>
+                    <li><code>GET /health</code> - API health check</li>
+                </ul>
+                
+                <p><strong>Use with AI Coding Tools:</strong> Configure Cursor, Roo Cline, or any OpenAI-compatible client to use this URL with API key <code>sk-v1-42test</code></p>
+                
+                <p><strong>Links:</strong> 
+                    <a href="https://github.com/bearjcc/QLM" target="_blank">GitHub Repo</a> | 
+                    <a href="/health">API Health</a> | 
+                    <a href="/models">Models</a>
+                </p>
+            </div>
+        </details>
         
-        <p style="text-align: center; margin-top: 30px; opacity: 0.8;">
+        <p style="text-align: center; margin-top: 20px; color: #666; font-size: 0.9em;">
             <em>"Rubber Duckie, you're the one..." — Inspired by Ernie's timeless wisdom</em>
         </p>
     </div>
+
+    <script>
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const button = document.getElementById('sendButton');
+            const status = document.getElementById('status');
+            const message = input.value.trim();
+
+            if (!message) return;
+
+            input.disabled = true;
+            button.disabled = true;
+            button.textContent = 'Quacking...';
+            status.textContent = 'Waiting for duck response...';
+
+            addMessage(message, 'user');
+            input.value = '';
+
+            try {
+                const response = await fetch('/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer sk-v1-42test'
+                    },
+                    body: JSON.stringify({
+                        model: 'quack-model',
+                        messages: [{ role: 'user', content: message }]
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const duckResponse = data.choices[0].message.content;
+                
+                addMessage(duckResponse, 'duck');
+                status.textContent = 'Ready';
+
+            } catch (error) {
+                addMessage('Error: ' + error.message, 'duck');
+                status.textContent = 'Error - please try again';
+            } finally {
+                input.disabled = false;
+                button.disabled = false;
+                button.textContent = 'Send';
+                input.focus();
+            }
+        }
+
+        function addMessage(content, type) {
+            const chatContainer = document.getElementById('chatContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}-message`;
+            messageDiv.innerHTML = `<strong>${type === 'user' ? 'You' : 'QLM'}:</strong> ${content}`;
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('messageInput').focus();
+        });
+    </script>
 </body>
 </html>
     """
