@@ -348,17 +348,92 @@ def generate_duck_response(model: str, prompt: str = "", reasoning_effort: str =
 
 @app.get("/")
 async def root():
-    """Root endpoint with basic API info"""
-    return {
-        "name": "QLM - Quack Language Model",
-        "version": "1.0.0",
-        "description": "A duck-themed language model API",
-        "endpoints": {
-            "/chat/completions": "OpenAI-compatible chat completion",
-            "/models": "List available models",
-            "/health": "Health check"
+    """Root endpoint - serves HTML landing page"""
+    from fastapi.responses import HTMLResponse
+    
+    html_content = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QLM - Quack Language Model</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
         }
-    }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        h1 { text-align: center; font-size: 3em; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); }
+        .subtitle { text-align: center; font-size: 1.2em; opacity: 0.9; margin-bottom: 30px; }
+        .duck-emoji { font-size: 4em; text-align: center; margin: 20px 0; }
+        .info { background: rgba(0, 0, 0, 0.2); border-radius: 10px; padding: 20px; margin: 20px 0; }
+        code { background: rgba(0, 0, 0, 0.3); padding: 2px 8px; border-radius: 4px; }
+        .endpoint { margin: 10px 0; padding: 10px; background: rgba(255, 255, 255, 0.1); border-radius: 5px; }
+        a { color: #ffd700; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🦆 QLM</h1>
+        <p class="subtitle">Quack Language Model API</p>
+        <div class="duck-emoji">🦆</div>
+        
+        <div class="info">
+            <h2>API Information</h2>
+            <p><strong>Version:</strong> 1.0.0</p>
+            <p><strong>Status:</strong> Running</p>
+            <p><strong>Description:</strong> OpenAI-compatible API that responds with duck sounds</p>
+        </div>
+        
+        <div class="info">
+            <h2>Available Endpoints</h2>
+            <div class="endpoint"><code>POST /chat/completions</code> - OpenAI-compatible chat</div>
+            <div class="endpoint"><code>GET /models</code> - List available models</div>
+            <div class="endpoint"><code>GET /health</code> - Health check</div>
+        </div>
+        
+        <div class="info">
+            <h2>Quick Start</h2>
+            <p>Use with any OpenAI-compatible client:</p>
+            <pre style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 5px; overflow-x: auto;">
+curl -X POST http://localhost:8000/chat/completions \\
+  -H "Content-Type: application/json" \\
+  -H "Authorization: Bearer sk-v1-42test" \\
+  -d '{
+    "model": "quack-model",
+    "messages": [{"role": "user", "content": "Hello!"}]
+  }'</pre>
+        </div>
+        
+        <div class="info">
+            <h2>Links</h2>
+            <p><a href="https://github.com/bearjcc/QLM" target="_blank">📦 GitHub Repository</a></p>
+            <p><a href="https://bearjcc.github.io/QLM/" target="_blank">🌐 Interactive Demo</a></p>
+            <p><a href="/health">🏥 Health Check</a></p>
+            <p><a href="/models">📋 Available Models</a></p>
+        </div>
+        
+        <p style="text-align: center; margin-top: 30px; opacity: 0.8;">
+            <em>"Rubber Duckie, you're the one..." — Inspired by Ernie's timeless wisdom</em>
+        </p>
+    </div>
+</body>
+</html>
+    """
+    return HTMLResponse(content=html_content)
 
 @app.get("/health")
 async def health_check():
