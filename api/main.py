@@ -13,10 +13,11 @@ import time
 import hashlib
 from typing import List, Dict, Any, Optional
 from fastapi import FastAPI, HTTPException, Request, Header, Depends
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 import secrets
 import random
+import asyncio
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -357,7 +358,7 @@ async def list_models():
 
 @app.post("/chat/completions")
 async def chat_completions(
-    request: Dict[str, Any],
+    request: Request,
     authorization: str = Header(None)
 ):
     """
@@ -366,6 +367,15 @@ async def chat_completions(
     Requires API key authentication (keys starting with 'sk-v1-42').
     """
     try:
+        # Parse request body
+        body = await request.json()
+        
+        # Log request for debugging
+        print(f"=== INCOMING REQUEST ===")
+        print(f"Model: {body.get('model', 'unknown')}")
+        print(f"Stream: {body.get('stream', False)}")
+        print(f"Authorization: {authorization[:20]}..." if authorization else "None")
+        
         # Validate API key
         if not validate_api_key(authorization):
             raise HTTPException(
@@ -374,27 +384,103 @@ async def chat_completions(
             )
 
         # Extract request parameters
-        model = request.get("model", "quack-model")
-        messages = request.get("messages", [])
-        max_tokens = request.get("max_tokens", 100)
-        reasoning_effort = request.get("reasoning_effort", None)
-        quack_thinking = request.get("quack_thinking", False)
+        model = body.get("model", "quack-model")
+        messages = body.get("messages", [])
+        max_tokens = body.get("max_tokens", 100)
+        reasoning_effort = body.get("reasoning_effort", None)
+        quack_thinking = body.get("quack_thinking", False)
 
         # Get the last user message as prompt
         prompt = ""
         if messages:
             last_message = messages[-1]
             if last_message.get("role") == "user":
-                prompt = last_message.get("content", "")
+                content = last_message.get("content", "")
+                
+                # Handle multimodal content (Roo sends content as list)
+                if isinstance(content, list):
+                    # Extract text from multimodal content
+                    text_parts = []
+                    for part in content:
+                        if isinstance(part, dict) and part.get("type") == "text":
+                            text_parts.append(part.get("text", ""))
+                    prompt = " ".join(text_parts)
+                else:
+                    prompt = content
 
-        # Generate duck response with optional reasoning
-        response = generate_duck_response(model, prompt, reasoning_effort=reasoning_effort, thinking=quack_thinking)
-
-        return JSONResponse(content=response)
+        # Check if streaming is requested
+        stream = body.get("stream", False)
+        
+        if stream:
+            # Return streaming response
+            async def generate_stream():
+                # Generate the duck response
+                response_data = generate_duck_response(model, prompt, reasoning_effort=reasoning_effort, thinking=quack_thinking)
+                content = response_data["choices"][0]["message"]["content"]
+                
+                # Stream the response in chunks (character by character for effect)
+                chunk_id = f"chatcmpl-{secrets.token_hex(16)}"
+                
+                # Send initial chunk
+                yield f"data: {json.dumps({'id': chunk_id, 'object': 'chat.completion.chunk', 'created': int(time.time()), 'model': model, 'choices': [{'index': 0, 'delta': {'role': 'assistant', 'content': ''}, 'finish_reason': None}]})}\n\n"
+                
+                # Stream content
+                for char in content:
+                    chunk = {
+                        "id": chunk_id,
+                        "object": "chat.completion.chunk",
+                        "created": int(time.time()),
+                        "model": model,
+                        "choices": [{
+                            "index": 0,
+                            "delta": {"content": char},
+                            "finish_reason": None
+                        }]
+                    }
+                    yield f"data: {json.dumps(chunk)}\n\n"
+                    await asyncio.sleep(0.01)  # Small delay for streaming effect
+                
+                # Send final chunk with usage info (if requested)
+                final_chunk = {
+                    "id": chunk_id,
+                    "object": "chat.completion.chunk",
+                    "created": int(time.time()),
+                    "model": model,
+                    "choices": [{
+                        "index": 0,
+                        "delta": {},
+                        "finish_reason": "stop"
+                    }]
+                }
+                
+                # Include usage if stream_options.include_usage is true
+                if body.get("stream_options", {}).get("include_usage", False):
+                    final_chunk["usage"] = response_data["usage"]
+                
+                yield f"data: {json.dumps(final_chunk)}\n\n"
+                yield "data: [DONE]\n\n"
+            
+            return StreamingResponse(
+                generate_stream(),
+                media_type="text/event-stream",
+                headers={
+                    "Cache-Control": "no-cache",
+                    "Connection": "keep-alive",
+                }
+            )
+        else:
+            # Non-streaming response
+            response = generate_duck_response(model, prompt, reasoning_effort=reasoning_effort, thinking=quack_thinking)
+            return JSONResponse(content=response)
 
     except HTTPException:
         raise
     except Exception as e:
+        # Log the error for debugging
+        import traceback
+        print(f"ERROR in chat_completions: {str(e)}")
+        print(f"Model: {body.get('model', 'unknown') if 'body' in locals() else 'unknown'}")
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Error generating response: {str(e)}")
 
 @app.post("/completions")
