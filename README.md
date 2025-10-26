@@ -22,7 +22,7 @@ QLM (Quack Language Model) is an API-compatible service that mimics OpenAI's API
 - ✅ **Duck Reasoning**: `reasoning_effort` parameter for OpenAI-compatible reasoning
 - ✅ **Multiple Models**: Standard (`quack-model`) and reasoning (`reasoning-duck`) models
 - ✅ **Rich Duck Emojis**: 24+ different duck sounds, emojis, and combinations
-- ✅ **Base64 Easter Eggs**: Hidden deterministic easter eggs based on input encoding
+- ✅ **Varied Responses**: No consecutive duplicates for more entertaining interactions
 - ✅ **Web Interface**: Interactive demo via GitHub Pages
 - ✅ **Production Ready**: CORS support, error handling, logging
 
