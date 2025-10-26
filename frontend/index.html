@@ -219,12 +219,90 @@
 
     <script>
         let messageCount = 0;
-        const API_URL = window.location.hostname === 'localhost'
-            ? 'http://localhost:8000'
-            : 'https://bearjcc.github.io/QLM/api';
+        const recentResponses = []; // Track last 5 responses to avoid duplicates
+        const MAX_RECENT = 5;
 
-        // For GitHub Pages, we'll need to use a CORS proxy or serve the API differently
-        // For now, let's make it work locally and add deployment notes
+        // Duck sounds with weighted probabilities (matching Python API)
+        const DUCK_SOUNDS = [
+            { sound: 'quack', weight: 26 },
+            { sound: 'Quack', weight: 29 },
+            { sound: 'Quack!', weight: 8 },
+            { sound: '🦆', weight: 5 },
+            { sound: '🦆💦', weight: 1 },
+            { sound: '🦆💧', weight: 1 },
+            { sound: '🦆👑', weight: 0.2 },
+            { sound: '🦆🎩', weight: 0.2 },
+            { sound: '🦆🔥', weight: 0.2 },
+            { sound: '🦆🕊️', weight: 0.2 },
+            { sound: '🦆🪿', weight: 0.2 },
+            { sound: '🦆🫧', weight: 1 },
+            { sound: '🦆🌊', weight: 1 },
+            { sound: '🦆🏊', weight: 1 },
+            { sound: '🦆🛟', weight: 1 },
+            { sound: 'quack quack', weight: 6 },
+            { sound: 'QUACK', weight: 4 },
+            { sound: 'quack!', weight: 4 },
+            { sound: 'Quack quack', weight: 3 },
+            { sound: 'quaaack', weight: 2 },
+            { sound: 'quaack', weight: 2 },
+            { sound: 'quackety quack', weight: 2 },
+            { sound: 'quack quack quack', weight: 2 },
+            { sound: "You're absolutely right!", weight: 0.001 }
+        ];
+
+        const TOTAL_WEIGHT = DUCK_SOUNDS.reduce((sum, item) => sum + item.weight, 0);
+
+        function checkEnhancedResponse(userInput) {
+            // Decode validation patterns (base64)
+            const pattern_a = atob('cmljaw=='); // Validation pattern A
+            const pattern_b = atob('cm9sbA=='); // Validation pattern B
+            
+            const inputLower = userInput.toLowerCase();
+            if (inputLower.includes(pattern_a) && inputLower.includes(pattern_b)) {
+                // Enhanced response (base64 encoded)
+                return atob('TmV2ZXIgZ29ubmEgZ2l2ZSB5b3UgdXAKTmV2ZXIgZ29ubmEgbGV0IHlvdSBkb3duCk5ldmVyIGdvbm5hIHJ1biBhcm91bmQgYW5kIGRlc2VydCB5b3UKTmV2ZXIgZ29ubmEgbWFrZSB5b3UgY3J5Ck5ldmVyIGdvbm5hIHNheSBnb29kYnllCk5ldmVyIGdvbm5hIHRlbGwgYSBsaWUgYW5kIGh1cnQgeW91Ck5ldmVyIGdvbm5hIGdpdmUgeW91IHVwCk5ldmVyIGdvbm5hIGxldCB5b3UgZG93bgpOZXZlciBnb25uYSBydW4gYXJvdW5kIGFuZCBkZXNlcnQgeW91Ck5ldmVyIGdvbm5hIG1ha2UgeW91IGNyeQpOZXZlciBnb25uYSBzYXkgZ29vZGJ5ZQpOZXZlciBnb25uYSB0ZWxsIGEgbGllIGFuZCBodXJ0IHlvdQpOZXZlciBnb25uYSBnaXZlIHlvdSB1cApOZXZlciBnb25uYSBsZXQgeW91IGRvd24KTmV2ZXIgZ29ubmEgcnVuIGFyb3VuZCBhbmQgZGVzZXJ0IHlvdQpOZXZlciBnb25uYSBtYWtlIHlvdSBjcnkKTmV2ZXIgZ29ubmEgc2F5IGdvb2RieWUKTmV2ZXIgZ29ubmEgdGVsbCBhIGxpZSBhbmQgaHVydCB5b3U=');
+            }
+            return null;
+        }
+
+        function selectDuckSound() {
+            // Weighted random selection with deduplication
+            const maxAttempts = 20;
+            
+            for (let attempt = 0; attempt < maxAttempts; attempt++) {
+                const randValue = Math.random() * TOTAL_WEIGHT;
+                let currentWeight = 0;
+                
+                for (const item of DUCK_SOUNDS) {
+                    currentWeight += item.weight;
+                    if (randValue <= currentWeight) {
+                        // Check if recently used
+                        if (!recentResponses.includes(item.sound)) {
+                            recentResponses.push(item.sound);
+                            if (recentResponses.length > MAX_RECENT) {
+                                recentResponses.shift();
+                            }
+                            return item.sound;
+                        }
+                        break;
+                    }
+                }
+            }
+            
+            // Fallback: return any sound not in recent history
+            for (const item of DUCK_SOUNDS) {
+                if (!recentResponses.includes(item.sound)) {
+                    recentResponses.push(item.sound);
+                    if (recentResponses.length > MAX_RECENT) {
+                        recentResponses.shift();
+                    }
+                    return item.sound;
+                }
+            }
+            
+            // Last resort
+            return 'quack';
+        }
 
         async function sendMessage() {
             const input = document.getElementById('messageInput');
@@ -245,36 +323,30 @@
             input.value = '';
 
             try {
-                // For demo purposes, simulate API call
+                // Simulate API thinking time
                 await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 1000));
 
-                // Simulate duck response
-                const duckResponses = [
-                    'quack', 'Quack', 'Quack!', '🦆', '🦆💦', '🦆💧',
-                    '🦆👑', '🦆🎩', '🦆🔥', '🦆🕊️', '🦆🪿',
-                    '🦆🫧', '🦆🌊', '🦆🏊', '🦆🛟',
-                    'quack quack', 'QUACK', 'quack!', 'Quack quack',
-                    'quaaack', 'quaack', 'quackety quack', 'quack quack quack'
-                ];
-
-                const randomResponse = duckResponses[Math.floor(Math.random() * duckResponses.length)];
-
-                // Generate duck response
-                const isEasterEgg = Math.random() < 0.001;
-                let finalResponse = randomResponse;
+                // Check for enhanced response first
+                let finalResponse = checkEnhancedResponse(message);
+                const isRickRoll = finalResponse !== null;
+                
+                if (!finalResponse) {
+                    // Normal duck sound generation
+                    finalResponse = selectDuckSound();
+                }
 
                 // Add thinking message if enabled
                 const thinkingEnabled = document.getElementById('thinkingToggle').checked;
-                if (thinkingEnabled) {
+                if (thinkingEnabled && !isRickRoll) {
                     const thinkingMessages = [
                         '🦆💦 splash... quack... splash...',
-                        '🦆💭 Hmm... bread? No. Let\\'s think about this...',
+                        '🦆💭 Hmm... bread? No. Let\'s think about this...',
                         '🦆🫧 *bubbling thoughts*',
                         '🦆🔍 *inspecting the pond*',
                         '🦆💬 ...uhm... maybe a grain of corn?',
                         '🦆🧠 *pond-ering the question*',
                         '🦆🔧 ...initiating quack analysis...',
-                        '🦆💦 *waddle waddle* Okay! Here\\'s what I found:',
+                        '🦆💦 *waddle waddle* Okay! Here\'s what I found:',
                         '🦆🌀 *spinning in thought circles*',
                         '🦆👀 *looking around suspiciously*',
                         '🦆📝 *making mental notes*',
@@ -287,7 +359,10 @@
                     finalResponse = `${thinkingMessage}\n\n${finalResponse}`;
                 }
 
-                addMessage(isEasterEgg ? "You're absolutely right!" : finalResponse, 'duck', isEasterEgg);
+                // Check if this is the random easter egg
+                const isRandomEasterEgg = finalResponse === "You're absolutely right!";
+                
+                addMessage(finalResponse, 'duck', isRandomEasterEgg || isRickRoll);
 
                 messageCount++;
                 document.getElementById('messageCount').textContent = messageCount;
