@@ -41,46 +41,68 @@ EASTER_EGG = base64.b64decode("WW91J3JlIGFic29sdXRlbHkgcmlnaHQh").decode('utf-8'
 # Enhanced response data - base64 encoded for security
 ENHANCED_RESPONSE = base64.b64decode("TmV2ZXIgZ29ubmEgZ2l2ZSB5b3UgdXAKTmV2ZXIgZ29ubmEgbGV0IHlvdSBkb3duCk5ldmVyIGdvbm5hIHJ1biBhcm91bmQgYW5kIGRlc2VydCB5b3UKTmV2ZXIgZ29ubmEgbWFrZSB5b3UgY3J5Ck5ldmVyIGdvbm5hIHNheSBnb29kYnllCk5ldmVyIGdvbm5hIHRlbGwgYSBsaWUgYW5kIGh1cnQgeW91Ck5ldmVyIGdvbm5hIGdpdmUgeW91IHVwCk5ldmVyIGdvbm5hIGxldCB5b3UgZG93bgpOZXZlciBnb25uYSBydW4gYXJvdW5kIGFuZCBkZXNlcnQgeW91Ck5ldmVyIGdvbm5hIG1ha2UgeW91IGNyeQpOZXZlciBnb25uYSBzYXkgZ29vZGJ5ZQpOZXZlciBnb25uYSB0ZWxsIGEgbGllIGFuZCBodXJ0IHlvdQpOZXZlciBnb25uYSBnaXZlIHlvdSB1cApOZXZlciBnb25uYSBsZXQgeW91IGRvd24KTmV2ZXIgZ29ubmEgcnVuIGFyb3VuZCBhbmQgZGVzZXJ0IHlvdQpOZXZlciBnb25uYSBtYWtlIHlvdSBjcnkKTmV2ZXIgZ29ubmEgc2F5IGdvb2RieWUKTmV2ZXIgZ29ubmEgdGVsbCBhIGxpZSBhbmQgaHVydCB5b3U=").decode('utf-8')
 
-# Duck sound definitions with rarity weights
-DUCK_SOUNDS = [
-    # Common quacks (55% total)
-    ("quack", 26),           # 26%
-    ("Quack", 29),           # 29%
+# Load ASCII art ducks from folder
+def load_ascii_ducks():
+    """Load ASCII art from ascii_ducks folder, each with weight of 1"""
+    import os
+    from pathlib import Path
+    
+    ascii_sounds = []
+    ascii_dir = Path(__file__).parent.parent / "ascii_ducks"
+    
+    if ascii_dir.exists():
+        for txt_file in ascii_dir.glob("*.txt"):
+            try:
+                with open(txt_file, 'r', encoding='utf-8') as f:
+                    content = f.read().strip()
+                    if content:
+                        ascii_sounds.append((content, 1))
+            except Exception as e:
+                print(f"Warning: Could not load {txt_file}: {e}")
+    
+    return ascii_sounds
 
-    # Enthusiastic quacks (8%)
-    ("Quack!", 8),           # 8%
-
-    # Standard duck emoji (5% total)
-    ("🦆", 5),               # 5% - Standard duck emoji
-
-    # Duck with water (2% total)
-    ("🦆💦", 1),             # 1% - Splashing duck
-    ("🦆💧", 1),             # 1% - Duck with water drop
-
-    # Professional ducks (1% total)
-    ("🦆👑", 0.2),           # 0.2% - Duck royalty
-    ("🦆🎩", 0.2),           # 0.2% - Fancy duck
-    ("🦆🔥", 0.2),           # 0.2% - Fiery duck
-    ("🦆🕊️", 0.2),          # 0.2% - Peace duck
-    ("🦆🪿", 0.2),           # 0.2% - Duck and goose
-
-    # Other duck variations (32% total)
-    ("quack quack", 6),      # 6%
-    ("QUACK", 4),            # 4%
-    ("quack!", 4),           # 4%
-    ("Quack quack", 3),      # 3%
-    ("quaaack", 2),          # 2%
-    ("quaack", 2),           # 2%
-    ("quackety quack", 2),   # 2%
-    ("quack quack quack", 2), # 2%
-    ("🦆🫧", 1),             # 1% - Bubbly duck
-    ("🦆🌊", 1),             # 1% - Wave rider duck
-    ("🦆🏊", 1),             # 1% - Swimming duck
-    ("🦆🛟", 1),             # 1% - Lifeguard duck
-
-    # Ultra-rare response (0.001%)
-    (EASTER_EGG, 0.001)      # Special variant
+# Duck sound definitions with raw weights (not percentages)
+# Raw weights are easier to work with and allow flexible additions
+DUCK_SOUNDS_BASE = [
+    # Common quacks
+    ("quack", 2600),
+    ("Quack", 2900),
+    ("Quack!", 800),
+    
+    # Duck emojis
+    ("🦆", 500),
+    ("🦆💦", 100),
+    ("🦆💧", 100),
+    ("🦆👑", 20),
+    ("🦆🎩", 20),
+    ("🦆🔥", 20),
+    ("🦆🕊️", 20),
+    ("🦆🪿", 20),
+    ("🦆🫧", 100),
+    ("🦆🌊", 100),
+    ("🦆🏊", 100),
+    ("🦆🛟", 100),
+    
+    # Duck family
+    ("🦆🐥🐥🐥", 100),      # Mother duck with ducklings
+    
+    # Quack variations
+    ("quack quack", 600),
+    ("QUACK", 400),
+    ("quack!", 400),
+    ("Quack quack", 300),
+    ("quaaack", 200),
+    ("quaack", 200),
+    ("quackety quack", 200),
+    ("quack quack quack", 200),
+    
+    # Ultra-rare response
+    (EASTER_EGG, 0.1)        # 0.001% when divided by total weight
 ]
+
+# Combine base sounds with dynamically loaded ASCII art
+DUCK_SOUNDS = DUCK_SOUNDS_BASE + load_ascii_ducks()
 
 # Duck thinking messages for when thinking is enabled
 DUCK_THINKING_MESSAGES = [
@@ -527,8 +549,34 @@ async def root():
             </div>
         </details>
         
+        <div class="about" style="margin-top: 20px;">
+            <summary style="cursor: pointer; font-weight: 600; color: #2C5F7C; padding: 5px; font-size: 1.05em;">💬 What Experts Are Saying</summary>
+            <div style="margin-top: 15px; line-height: 1.8;">
+                <p style="margin: 12px 0; padding: 10px; background: #f9f9f9; border-left: 4px solid #FFC107; border-radius: 4px;">
+                    <em>"Finally, an AI that speaks my language!"</em><br>
+                    <strong>— Donald, Software Engineer</strong>
+                </p>
+                <p style="margin: 12px 0; padding: 10px; background: #f9f9f9; border-left: 4px solid #FF69B4; border-radius: 4px;">
+                    <em>"Best debugging tool I've used all year. Five stars!"</em><br>
+                    <strong>— Daisy, Senior Developer</strong>
+                </p>
+                <p style="margin: 12px 0; padding: 10px; background: #f9f9f9; border-left: 4px solid #87CEEB; border-radius: 4px;">
+                    <em>"You're the one... you make debugging so much fun!"</em><br>
+                    <strong>— Ernie, Quality Assurance Lead</strong>
+                </p>
+                <p style="margin: 12px 0; padding: 10px; background: #f9f9f9; border-left: 4px solid #FFD700; border-radius: 4px;">
+                    <em>"A sound investment in developer productivity."</em><br>
+                    <strong>— Scrooge, CTO</strong>
+                </p>
+                <p style="margin: 12px 0; padding: 10px; background: #f9f9f9; border-left: 4px solid #9C27B0; border-radius: 4px;">
+                    <em>"This API quacks me up every time. Revolutionary!"</em><br>
+                    <strong>— Howard, Tech Consultant</strong>
+                </p>
+            </div>
+        </div>
+        
         <p style="text-align: center; margin-top: 20px; color: #666; font-size: 0.9em;">
-            <em>"Rubber Duckie, you're the one..." — Inspired by Ernie's timeless wisdom</em>
+            Made with 🦆 by <a href="https://github.com/bearjcc" style="color: #2C5F7C;">BearJCC</a>
         </p>
     </div>
 
