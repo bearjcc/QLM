@@ -18,12 +18,15 @@ A humorous open-source project that brings the rubber duck back to debugging! QL
 
 ## What is QLM?
 
-QLM (Quack Language Model) is an API-compatible service that mimics OpenAI's API format but responds exclusively with duck onomatopoeia. It's designed for:
+While others chase AGI, we've achieved **ADI: Artificial Duck Intelligence**.
 
-- **Educational purposes**: Understanding API compatibility
-- **Humor**: Bringing joy to debugging sessions
-- **Testing**: Mock API responses for development
-- **Varied Responses**: Multiple duck sound variations
+QLM (Quack Language Model) is an OpenAI-compatible API that responds exclusively with duck sounds. Some might be stuck on a high horse. We're not sure how to get down from a duck.
+
+**Use Cases:**
+- **Rubber Duck Debugging**: Now with actual ducks
+- **API Testing**: Mock OpenAI-compatible responses
+- **Humor**: Bringing joy back to development
+- **Demonstrating API Compatibility**: Educational and entertaining
 
 ## Features
 
@@ -328,14 +331,25 @@ pytest tests/
 
 MIT License - feel free to use in your projects!
 
+## Why QLM?
+
+**State-of-the-art ADI Technology**: While competitors focus on billions of parameters, we've mastered the most important one: quack.
+
+**Unparalleled Accuracy**: 100% of our responses are duck sounds. Other models can only dream of such consistency.
+
+**Ethical AI**: Our ducks never hallucinate. They're just ducks.
+
+**Energy Efficient**: Trained on a single pond. Carbon footprint: one bread crumb.
+
 ## Acknowledgments
 
 - Inspired by rubber duck debugging methodology
-- Built with FastAPI for speed and compatibility
-- Deployed via GitHub Pages for universal access
+- Powered by ADI (Artificial Duck Intelligence)
+- Built with FastAPI for maximum quackability
+- Hosted on Hugging Face Spaces
 
 ---
 
-**Made with 🦆 and lots of quacks by BearJCC**
+**Made with 🦆 and ADI by BearJCC**
 
 *"Rubber Duckie, you're the one..." — Inspired by Ernie's timeless wisdom*

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>QLM Frontend Test</title>
+</head>
+<body>
+    <h1>QLM Frontend Test</h1>
+    <div id="results"></div>
+    
+    <script>
+        const results = document.getElementById('results');
+        
+        // Test 1: Normal duck sound
+        results.innerHTML += '<h2>Test 1: Normal Input</h2>';
+        testQLM("Hello duck!");
+        
+        // Test 2: Rick Roll trigger
+        results.innerHTML += '<h2>Test 2: Enhanced Response Test</h2>';
+        testQLM("I love rick and roll music");
+        
+        // Test 3: Multiple requests for variety
+        results.innerHTML += '<h2>Test 3: Varied Responses</h2>';
+        for (let i = 0; i < 5; i++) {
+            testQLM(`Test ${i + 1}`);
+        }
+        
+        function testQLM(message) {
+            const recentResponses = [];
+            const MAX_RECENT = 5;
+            
+            // Copy the exact logic from index.html
+            const DUCK_SOUNDS = [
+                { sound: 'quack', weight: 26 },
+                { sound: 'Quack', weight: 29 },
+                { sound: 'Quack!', weight: 8 },
+                { sound: '🦆', weight: 5 },
+                { sound: '🦆💦', weight: 1 },
+                { sound: '🦆💧', weight: 1 },
+                { sound: 'quack quack', weight: 6 },
+                { sound: 'QUACK', weight: 4 },
+                { sound: "You're absolutely right!", weight: 0.001 }
+            ];
+            
+            function checkEnhancedResponse(userInput) {
+                const pattern_a = atob('cmljaw==');
+                const pattern_b = atob('cm9sbA==');
+                
+                const inputLower = userInput.toLowerCase();
+                if (inputLower.includes(pattern_a) && inputLower.includes(pattern_b)) {
+                    return atob('TmV2ZXIgZ29ubmEgZ2l2ZSB5b3UgdXA='); // Abbreviated for test
+                }
+                return null;
+            }
+            
+            const enhanced = checkEnhancedResponse(message);
+            if (enhanced) {
+                results.innerHTML += `<p><strong>Input:</strong> "${message}" → <strong>Enhanced Response:</strong> ${enhanced.substring(0, 50)}...</p>`;
+            } else {
+                const TOTAL_WEIGHT = DUCK_SOUNDS.reduce((sum, item) => sum + item.weight, 0);
+                const randValue = Math.random() * TOTAL_WEIGHT;
+                let currentWeight = 0;
+                
+                for (const item of DUCK_SOUNDS) {
+                    currentWeight += item.weight;
+                    if (randValue <= currentWeight) {
+                        results.innerHTML += `<p><strong>Input:</strong> "${message}" → <strong>Response:</strong> ${item.sound}</p>`;
+                        break;
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
+

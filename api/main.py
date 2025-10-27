@@ -514,6 +514,13 @@ async def root():
         <h1>🦆 QLM</h1>
         <p class="subtitle">Returning Rubber Duck Debugging to the Modern World</p>
         
+        <div style="background: #f0f8ff; border-left: 4px solid #4682B4; padding: 15px; margin: 20px 0; border-radius: 8px;">
+            <p style="margin: 8px 0; color: #2C5F7C; font-size: 1.05em; line-height: 1.6;">
+                <strong>While others chase AGI, we've achieved ADI:</strong> Artificial Duck Intelligence.<br>
+                Some might be stuck on a high horse. We're not sure how to get down from a duck.
+            </p>
+        </div>
+        
         <div class="chat-container" id="chatContainer">
             <div class="message duck-message">
                 <strong>QLM:</strong> Quack! Type a message below and I'll respond with duck sounds! 🦆
@@ -550,27 +557,27 @@ async def root():
         </details>
         
         <div class="about" style="margin-top: 20px;">
-            <summary style="cursor: pointer; font-weight: 600; color: #2C5F7C; padding: 5px; font-size: 1.05em;">💬 What Experts Are Saying</summary>
+            <summary style="cursor: pointer; font-weight: 600; color: #2C5F7C; padding: 5px; font-size: 1.05em;">💬 What The Community Is Saying</summary>
             <div style="margin-top: 15px; line-height: 1.8;">
                 <p style="margin: 12px 0; padding: 10px; background: #f9f9f9; border-left: 4px solid #FFC107; border-radius: 4px;">
                     <em>"Finally, an AI that speaks my language!"</em><br>
-                    <strong>— Donald, Software Engineer</strong>
+                    <strong>— Donald</strong>
                 </p>
                 <p style="margin: 12px 0; padding: 10px; background: #f9f9f9; border-left: 4px solid #FF69B4; border-radius: 4px;">
-                    <em>"Best debugging tool I've used all year. Five stars!"</em><br>
-                    <strong>— Daisy, Senior Developer</strong>
+                    <em>"Best debugging tool I've used all year."</em><br>
+                    <strong>— Daisy</strong>
                 </p>
                 <p style="margin: 12px 0; padding: 10px; background: #f9f9f9; border-left: 4px solid #87CEEB; border-radius: 4px;">
-                    <em>"You're the one... you make debugging so much fun!"</em><br>
-                    <strong>— Ernie, Quality Assurance Lead</strong>
+                    <em>"You make debugging so much fun!"</em><br>
+                    <strong>— Ernie</strong>
                 </p>
                 <p style="margin: 12px 0; padding: 10px; background: #f9f9f9; border-left: 4px solid #FFD700; border-radius: 4px;">
-                    <em>"A sound investment in developer productivity."</em><br>
-                    <strong>— Scrooge, CTO</strong>
+                    <em>"A sound investment."</em><br>
+                    <strong>— Scrooge</strong>
                 </p>
                 <p style="margin: 12px 0; padding: 10px; background: #f9f9f9; border-left: 4px solid #9C27B0; border-radius: 4px;">
-                    <em>"This API quacks me up every time. Revolutionary!"</em><br>
-                    <strong>— Howard, Tech Consultant</strong>
+                    <em>"This API quacks me up every time!"</em><br>
+                    <strong>— Howard</strong>
                 </p>
             </div>
         </div>
