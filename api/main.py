@@ -132,7 +132,8 @@ DUCK_THINKING_MESSAGES = [
     "🦆🎭 Fun fact: I can't walk without bobbing my head. It's not a choice.",
     "🦆🌊 Waterproof feathers are great until you need a bath.",
     "🦆🐣 Baby ducks imprint on the first thing they see. I got lucky with mom.",
-    "🦆🦷 No teeth, no problem. Rocks do the chewing for me."
+    "🦆🦷 No teeth, no problem. Rocks do the chewing for me.",
+    "🦆🚙 I don't want to get into that Jeep."
 ]
 
 # Pre-calculate total weight for efficient random selection
