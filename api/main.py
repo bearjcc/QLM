@@ -523,6 +523,13 @@ async def root():
             <button onclick="sendMessage()" id="sendButton">Send</button>
         </div>
         
+        <div style="text-align: center; margin: 10px 0;">
+            <label style="cursor: pointer; color: #2C5F7C; font-weight: 500;">
+                <input type="checkbox" id="thinkingToggle" style="margin-right: 8px;">
+                🦆 Enable Duck Thinking Mode
+            </label>
+        </div>
+        
         <div class="status" id="status">Ready</div>
         
         <details class="about">
@@ -596,6 +603,8 @@ async def root():
             input.value = '';
 
             try {
+                const thinkingEnabled = document.getElementById('thinkingToggle').checked;
+                
                 const response = await fetch('/chat/completions', {
                     method: 'POST',
                     headers: {
@@ -604,7 +613,8 @@ async def root():
                     },
                     body: JSON.stringify({
                         model: 'quack-model',
-                        messages: [{ role: 'user', content: message }]
+                        messages: [{ role: 'user', content: message }],
+                        quack_thinking: thinkingEnabled
                     })
                 });
 
