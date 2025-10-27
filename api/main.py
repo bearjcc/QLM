@@ -537,20 +537,20 @@ async def root():
             <div class="about-content">
                 <p><strong>What is QLM?</strong> An OpenAI-compatible API that responds with duck sounds instead of AI content. Perfect for testing, humor, and bringing rubber duck debugging to life!</p>
                 
-                <p><strong>API Endpoints:</strong></p>
-                <ul>
-                    <li><code>POST /chat/completions</code> - OpenAI-compatible chat endpoint</li>
-                    <li><code>GET /models</code> - List available models</li>
-                    <li><code>GET /health</code> - API health check</li>
-                </ul>
+                       <p><strong>API Endpoints:</strong></p>
+                       <ul>
+                           <li><code>POST /v1/chat/completions</code> - OpenAI-compatible chat endpoint</li>
+                           <li><code>GET /v1/models</code> - List available models</li>
+                           <li><code>GET /health</code> - API health check</li>
+                       </ul>
+                       
+                       <p><strong>Use with AI Coding Tools:</strong> Configure Cursor, Roo Cline, or any OpenAI-compatible client to use this URL with API key <code>sk-v1-42test</code></p>
                 
-                <p><strong>Use with AI Coding Tools:</strong> Configure Cursor, Roo Cline, or any OpenAI-compatible client to use this URL with API key <code>sk-v1-42test</code></p>
-                
-                <p><strong>Links:</strong> 
-                    <a href="https://github.com/bearjcc/QLM" target="_blank">GitHub Repo</a> | 
-                    <a href="/health">API Health</a> | 
-                    <a href="/models">Models</a>
-                </p>
+                       <p><strong>Links:</strong> 
+                           <a href="https://github.com/bearjcc/QLM" target="_blank">GitHub Repo</a> | 
+                           <a href="/health">API Health</a> | 
+                           <a href="/v1/models">Models</a>
+                       </p>
             </div>
         </details>
         

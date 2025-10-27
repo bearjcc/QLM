@@ -58,7 +58,7 @@ python main.py
 
 3. **Test the API (requires authentication):**
 ```bash
-curl -X POST http://localhost:8000/chat/completions \
+curl -X POST http://localhost:8000/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer sk-v1-42your-api-key-here" \
   -d '{
@@ -71,7 +71,7 @@ curl -X POST http://localhost:8000/chat/completions \
 
 **With Reasoning:**
 ```bash
-curl -X POST http://localhost:8000/chat/completions \
+curl -X POST http://localhost:8000/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer sk-v1-42your-api-key-here" \
   -d '{
@@ -95,8 +95,8 @@ QLM works as a drop-in replacement for OpenAI API:
 import openai
 
 # Point to QLM instead of OpenAI
-openai.api_base = "http://localhost:8000"
-openai.api_key = "not-needed"
+openai.api_base = "http://localhost:8000/v1"
+openai.api_key = "sk-v1-42test"
 
 response = openai.ChatCompletion.create(
     model="quack-model",
@@ -169,7 +169,7 @@ All endpoints require authentication with an API key starting with `sk-v1-42`.
 
 ### Chat Completions (OpenAI Compatible)
 ```
-POST /chat/completions
+POST /v1/chat/completions
 ```
 Standard OpenAI chat completion format with duck responses.
 
@@ -237,7 +237,7 @@ Authorization: Bearer sk-v1-42your-api-key-here
 
 ### Legacy Completions
 ```
-POST /completions
+POST /v1/completions
 ```
 Backwards compatible with older OpenAI API format.
 
@@ -264,7 +264,7 @@ Returns API health status.
 
 ### Models List
 ```
-GET /models
+GET /v1/models
 ```
 Lists available models (currently just "quack-model").
 
