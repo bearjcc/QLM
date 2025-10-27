@@ -120,7 +120,19 @@ DUCK_THINKING_MESSAGES = [
     "🦆⚡ *brain quack activated*",
     "🦆🎯 *targeting the perfect response*",
     "🦆🛁 *rubber duck debugging mode*",
-    "🦆🌟 *diving deep into thought*"
+    "🦆🌟 *diving deep into thought*",
+    "🦆🪨 Fun fact: I ate three pebbles for breakfast. Helps with digestion!",
+    "🦆😴 Half my brain is asleep right now. Can you tell?",
+    "🦆👁️ Sleeping with one eye open... literally. Perks of being a duck.",
+    "🦆🦶 My feet are waterproof but not my bread. Ironic.",
+    "🦆🔄 I can see 340 degrees. Still can't find my favorite pebble.",
+    "🦆🚶 Humans waddle when they're drunk. I waddle sober. Who's winning?",
+    "🦆📢 Why do humans think our quacks don't echo? Of course they do...",
+    "🦆🧊 Cold feet? Never heard of them. Literally.",
+    "🦆🎭 Fun fact: I can't walk without bobbing my head. It's not a choice.",
+    "🦆🌊 Waterproof feathers are great until you need a bath.",
+    "🦆🐣 Baby ducks imprint on the first thing they see. I got lucky with mom.",
+    "🦆🦷 No teeth, no problem. Rocks do the chewing for me."
 ]
 
 # Pre-calculate total weight for efficient random selection
@@ -132,7 +144,7 @@ LAST_RESPONSE = None
 # Duck reasoning messages for when reasoning is enabled (OpenAI-compatible)
 DUCK_REASONING_MESSAGES = [
     "🦆💭 *pond-ering deeply about the query...*",
-    "🦆🔍 *analyzing the situation from all angles...*",
+    "🦆🔍 *analyzing the situation from all angles... all 340 degrees of them*",
     "🦆🧠 *activating enhanced quack analysis protocols...*",
     "🦆🎯 *targeting the most relevant duck wisdom...*",
     "🦆🔬 *conducting thorough aquatic research...*",
@@ -140,7 +152,13 @@ DUCK_REASONING_MESSAGES = [
     "🦆🧩 *assembling the perfect quack response...*",
     "🦆⚡ *boosting brain quacks to maximum...*",
     "🦆🔄 *iterating through multiple duck perspectives...*",
-    "🦆🌟 *accessing ancient duck wisdom...*"
+    "🦆🌟 *accessing ancient duck wisdom...*",
+    "🦆🪨 *consulting my breakfast pebbles for guidance...*",
+    "🦆💤 *thinking with half my brain while the other sleeps...*",
+    "🦆🦶 *waddle-processing this query... it's not optional...*",
+    "🦆🌊 *diving into deep thought... good thing I'm waterproof*",
+    "🦆👁️ *analyzing with one eye open and one asleep...*",
+    "🦆🦷 *no teeth needed for this problem-solving...*"
 ]
 
 def validate_api_key(authorization: str = Header(None)) -> bool:
@@ -225,7 +243,7 @@ def select_duck_sound() -> str:
     global LAST_RESPONSE
     
     max_attempts = 10  # Prevent infinite loop
-    
+
     for attempt in range(max_attempts):
         # Weighted random selection
         rand_value = secrets.randbelow(100000) / 100000.0 * TOTAL_WEIGHT
@@ -240,7 +258,7 @@ def select_duck_sound() -> str:
                     return sound
                 # Try again if it matches the last one
                 break
-    
+
     # Fallback: return any sound different from last
     for sound, _ in DUCK_SOUNDS:
         if sound != LAST_RESPONSE:
