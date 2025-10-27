@@ -126,9 +126,8 @@ DUCK_THINKING_MESSAGES = [
 # Pre-calculate total weight for efficient random selection
 TOTAL_WEIGHT = sum(weight for _, weight in DUCK_SOUNDS)
 
-# Track last responses to avoid duplicates (stores last N responses)
-from collections import deque
-RECENT_RESPONSES = deque(maxlen=5)  # Remember last 5 responses
+# Track last response to avoid consecutive duplicates
+LAST_RESPONSE = None
 
 # Duck reasoning messages for when reasoning is enabled (OpenAI-compatible)
 DUCK_REASONING_MESSAGES = [
@@ -221,43 +220,35 @@ def select_duck_sound() -> str:
     """
     Select a duck sound based on weighted probabilities.
     Uses cryptographically secure random for maximum randomness.
-    Avoids returning the same sound as the last few responses.
+    Prevents the same sound appearing twice in a row.
     """
-    max_attempts = 20  # Prevent infinite loop
-    attempts = 0
+    global LAST_RESPONSE
     
-    while attempts < max_attempts:
-        # Generate random float between 0 and 1 using secrets for crypto-strength randomness
-        rand_value = secrets.randbelow(100000) / 100000.0
-
+    max_attempts = 10  # Prevent infinite loop
+    
+    for attempt in range(max_attempts):
+        # Weighted random selection
+        rand_value = secrets.randbelow(100000) / 100000.0 * TOTAL_WEIGHT
         current_weight = 0.0
+        
         for sound, weight in DUCK_SOUNDS:
             current_weight += weight
             if rand_value <= current_weight:
-                # Check if this sound was recently used
-                if sound not in RECENT_RESPONSES:
-                    RECENT_RESPONSES.append(sound)
+                # Only reject if it's the same as the LAST response
+                if sound != LAST_RESPONSE:
+                    LAST_RESPONSE = sound
                     return sound
-                # If it was recent, try again
-                attempts += 1
+                # Try again if it matches the last one
                 break
-
-    # Fallback: return any sound not in recent history
+    
+    # Fallback: return any sound different from last
     for sound, _ in DUCK_SOUNDS:
-        if sound not in RECENT_RESPONSES:
-            RECENT_RESPONSES.append(sound)
+        if sound != LAST_RESPONSE:
+            LAST_RESPONSE = sound
             return sound
     
-    # Last resort (all sounds were recent, just return a random one)
-    rand_value = secrets.randbelow(100000) / 100000.0
-    current_weight = 0.0
-    for sound, weight in DUCK_SOUNDS:
-        current_weight += weight
-        if rand_value <= current_weight:
-            RECENT_RESPONSES.append(sound)
-            return sound
-    
-    # Ultimate fallback (should never happen)
+    # Ultimate fallback (should never happen unless only 1 sound exists)
+    LAST_RESPONSE = "quack"
     return "quack"
 
 def select_duck_thinking() -> str:
