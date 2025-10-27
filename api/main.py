@@ -910,7 +910,7 @@ async def list_models_v1(authorization: str = Header(None)):
 
 @app.post("/v1/chat/completions")
 async def chat_completions_v1(
-    request: Dict[str, Any],
+    request: Request,
     authorization: str = Header(None)
 ):
     """OpenAI v1 chat completions endpoint"""
