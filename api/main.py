@@ -531,9 +531,7 @@ async def root():
         </div>
         
         <div class="chat-container" id="chatContainer">
-            <div class="message duck-message">
-                <strong>QLM:</strong> Quack! Type a message below and I'll respond with duck sounds! 🦆
-            </div>
+            <!-- Seed message will be loaded via API call -->
         </div>
         
         <div class="input-container">
@@ -670,7 +668,31 @@ async def root():
             if (e.key === 'Enter') sendMessage();
         });
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Load seed message from API
+            try {
+                const response = await fetch('/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer sk-v1-42test'
+                    },
+                    body: JSON.stringify({
+                        model: 'quack-model',
+                        messages: [{ role: 'user', content: 'Hello!' }]
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const seedMessage = data.choices[0].message.content;
+                    addMessage(seedMessage, 'duck');
+                }
+            } catch (error) {
+                // Fallback to static message if API fails
+                addMessage('Quack! 🦆', 'duck');
+            }
+            
             document.getElementById('messageInput').focus();
         });
     </script>
