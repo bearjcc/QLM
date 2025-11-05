@@ -69,6 +69,7 @@ DUCK_SOUNDS_BASE = [
     ("quack", 2600),
     ("Quack", 2900),
     ("Quack!", 800),
+    ("Quack?", 500),
     
     # Duck emojis
     ("🦆", 500),

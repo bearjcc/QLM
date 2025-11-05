@@ -34,11 +34,19 @@
         .header {
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
             gap: 10px;
             padding: 15px 20px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             flex-shrink: 0;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            justify-content: center;
         }
 
         .header h1 {
@@ -60,6 +68,101 @@
         .header-subtitle::before {
             content: " • ";
             margin-right: 5px;
+        }
+
+        .testimonial-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: background 0.2s;
+        }
+
+        .testimonial-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            color: #333;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #666;
+            padding: 5px 10px;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        .modal h2 {
+            margin-top: 0;
+            color: #4682B4;
+        }
+
+        .testimonial {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+
+        .testimonial.t1 { border-left-color: #FFC107; }
+        .testimonial.t2 { border-left-color: #FF69B4; }
+        .testimonial.t3 { border-left-color: #87CEEB; }
+        .testimonial.t4 { border-left-color: #FFD700; }
+        .testimonial.t5 { border-left-color: #9C27B0; }
+
+        .testimonial em {
+            font-style: italic;
+            color: #555;
+        }
+
+        .testimonial strong {
+            display: block;
+            margin-top: 8px;
+            color: #2C5F7C;
         }
 
         .chat-container {
@@ -268,13 +371,18 @@
 <body>
     <div class="container">
         <div class="header">
-            <span class="duck-emoji">🦆</span>
-            <h1>QLM<span class="header-subtitle">Quack Language Model</span></h1>
+            <div class="header-left">
+                <span class="duck-emoji">🦆</span>
+                <h1>QLM<span class="header-subtitle">Quack Language Model</span></h1>
+            </div>
+            <button class="testimonial-btn" onclick="openTestimonials()" title="What the community is saying">
+                💬
+            </button>
         </div>
 
         <div class="chat-container" id="chatContainer">
-            <div class="message user-message">
-                Hello! Can you help me with some programming?
+            <div class="message duck-message">
+                Quack?
             </div>
         </div>
 
@@ -285,8 +393,8 @@
             </div>
             <div class="controls">
                 <label class="thinking-toggle">
-                    <input type="checkbox" id="thinkingToggle">
-                    <span>🦆 Duck Thinking</span>
+                    <input type="checkbox" id="thinkingToggle" onchange="updateToggleText()">
+                    <span id="toggleLabel">🦆 Enable seeing duck inner thoughts</span>
                 </label>
                 <span class="status-indicator" id="status">Ready</span>
             </div>
@@ -294,6 +402,38 @@
 
         <div id="easterEgg" class="easter-egg">
             🎉 You're absolutely right! 🎉
+        </div>
+
+        <div id="testimonialModal" class="modal" onclick="closeTestimonials(event)">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <button class="modal-close" onclick="closeTestimonials()">&times;</button>
+                <h2>💬 What The Community Is Saying</h2>
+                
+                <div class="testimonial t1">
+                    <em>"Finally, an AI that speaks my language!"</em>
+                    <strong>— Donald</strong>
+                </div>
+                
+                <div class="testimonial t2">
+                    <em>"Best debugging tool I've used all year."</em>
+                    <strong>— Daisy</strong>
+                </div>
+                
+                <div class="testimonial t3">
+                    <em>"You make debugging so much fun!"</em>
+                    <strong>— Ernie</strong>
+                </div>
+                
+                <div class="testimonial t4">
+                    <em>"A sound investment."</em>
+                    <strong>— Scrooge</strong>
+                </div>
+                
+                <div class="testimonial t5">
+                    <em>"This API quacks me up every time!"</em>
+                    <strong>— Howard</strong>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -306,6 +446,7 @@
             { sound: 'quack', weight: 26 },
             { sound: 'Quack', weight: 29 },
             { sound: 'Quack!', weight: 8 },
+            { sound: 'Quack?', weight: 5 },
             { sound: '🦆', weight: 5 },
             { sound: '🦆💦', weight: 1 },
             { sound: '🦆💧', weight: 1 },
@@ -514,10 +655,41 @@
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
+        // Update toggle label based on state
+        function updateToggleText() {
+            const toggle = document.getElementById('thinkingToggle');
+            const label = document.getElementById('toggleLabel');
+            
+            if (toggle.checked) {
+                label.textContent = '🦆 Disable seeing duck thoughts';
+            } else {
+                label.textContent = '🦆 Enable seeing duck inner thoughts';
+            }
+        }
+
+        // Open testimonials modal
+        function openTestimonials() {
+            document.getElementById('testimonialModal').classList.add('show');
+        }
+
+        // Close testimonials modal
+        function closeTestimonials(event) {
+            if (!event || event.target.id === 'testimonialModal' || event.target.className === 'modal-close') {
+                document.getElementById('testimonialModal').classList.remove('show');
+            }
+        }
+
         // Handle Enter key
         document.getElementById('messageInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 sendMessage();
+            }
+        });
+
+        // Handle Escape key to close modal
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeTestimonials();
             }
         });
 
