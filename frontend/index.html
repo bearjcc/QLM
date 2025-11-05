@@ -49,6 +49,24 @@
             justify-content: center;
         }
 
+        .info-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: background 0.2s;
+        }
+
+        .info-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
         .header h1 {
             font-size: 1.5em;
             margin: 0;
@@ -163,6 +181,64 @@
             display: block;
             margin-top: 8px;
             color: #2C5F7C;
+        }
+
+        .copy-field {
+            margin: 15px 0;
+        }
+
+        .copy-field label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .copy-container {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .copy-input {
+            flex: 1;
+            padding: 10px;
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #333;
+        }
+
+        .copy-btn {
+            padding: 10px 16px;
+            background: #4682B4;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+
+        .copy-btn:hover {
+            background: #3A6D9E;
+        }
+
+        .copy-btn.copied {
+            background: #4CAF50;
+        }
+
+        .code-block {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 12px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            overflow-x: auto;
         }
 
         .chat-container {
@@ -371,6 +447,9 @@
 <body>
     <div class="container">
         <div class="header">
+            <button class="info-btn" onclick="openAbout()" title="About QLM">
+                ℹ️
+            </button>
             <div class="header-left">
                 <span class="duck-emoji">🦆</span>
                 <h1>QLM<span class="header-subtitle">Quack Language Model</span></h1>
@@ -431,6 +510,45 @@
                     <em>"This API quacks me up every time!"</em>
                     <strong>— Howard</strong>
                 </div>
+            </div>
+        </div>
+
+        <div id="aboutModal" class="modal" onclick="closeAbout(event)">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <button class="modal-close" onclick="closeAbout()">&times;</button>
+                <h2>ℹ️ About QLM</h2>
+                
+                <p><strong>QLM (Quack Language Model)</strong> is an OpenAI API-compatible endpoint that responds to requests with duck sounds. Perfect for testing, rubber duck debugging, or just having fun with your API integrations!</p>
+
+                <h3>🔌 OpenAI API Compatible</h3>
+                <p>QLM implements the OpenAI Chat Completions API format, making it a drop-in replacement for testing and development.</p>
+
+                <div class="copy-field">
+                    <label>API Base URL:</label>
+                    <div class="copy-container">
+                        <input type="text" class="copy-input" value="https://bearjcc-quack-language-model.hf.space" readonly id="apiUrl">
+                        <button class="copy-btn" onclick="copyToClipboard('apiUrl', this)">Copy</button>
+                    </div>
+                </div>
+
+                <div class="copy-field">
+                    <label>API Key:</label>
+                    <div class="copy-container">
+                        <input type="text" class="copy-input" value="sk-v1-42test" readonly id="apiKey">
+                        <button class="copy-btn" onclick="copyToClipboard('apiKey', this)">Copy</button>
+                    </div>
+                </div>
+
+                <h3>📝 Example Usage</h3>
+                <div class="code-block">curl -X POST https://bearjcc-quack-language-model.hf.space/chat/completions \<br>
+  -H "Authorization: Bearer sk-v1-42test" \<br>
+  -H "Content-Type: application/json" \<br>
+  -d '{"model": "quack-model", "messages": [{"role": "user", "content": "Hello!"}]}'</div>
+
+                <p style="margin-top: 20px; font-size: 0.9em; color: #666;">
+                    Created by <a href="https://github.com/bearjcc" target="_blank" style="color: #4682B4;">Bear Caswell</a> • 
+                    <a href="https://github.com/bearjcc/QLM" target="_blank" style="color: #4682B4;">View on GitHub</a>
+                </p>
             </div>
         </div>
     </div>
@@ -535,6 +653,42 @@
             }
         }
 
+        // Open about modal
+        function openAbout() {
+            document.getElementById('aboutModal').classList.add('show');
+        }
+
+        // Close about modal
+        function closeAbout(event) {
+            if (!event || event.target.id === 'aboutModal' || event.target.className === 'modal-close') {
+                document.getElementById('aboutModal').classList.remove('show');
+            }
+        }
+
+        // Copy to clipboard
+        function copyToClipboard(inputId, button) {
+            const input = document.getElementById(inputId);
+            input.select();
+            input.setSelectionRange(0, 99999); // For mobile devices
+            
+            navigator.clipboard.writeText(input.value).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.classList.add('copied');
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+                button.textContent = 'Failed';
+                setTimeout(() => {
+                    button.textContent = 'Copy';
+                }, 2000);
+            });
+        }
+
         // Handle Enter key
         document.getElementById('messageInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
@@ -542,10 +696,11 @@
             }
         });
 
-        // Handle Escape key to close modal
+        // Handle Escape key to close modals
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeTestimonials();
+                closeAbout();
             }
         });
 
