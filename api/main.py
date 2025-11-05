@@ -134,7 +134,25 @@ DUCK_THINKING_MESSAGES = [
     "🦆🌊 Waterproof feathers are great until you need a bath.",
     "🦆🐣 Baby ducks imprint on the first thing they see. I got lucky with mom.",
     "🦆🦷 No teeth, no problem. Rocks do the chewing for me.",
-    "🦆🚙 I don't want to get into that Jeep."
+    "🦆🚙 I don't want to get into that Jeep.",
+    "🦆🤔 Pondering life's greatest questions...",
+    "🦆🍞 Searching for the crumb of truth...",
+    "🦆❌ But I don't want to be in a row!",
+    "🦆💬 I wonder if they give a quack about what I have to say...",
+    "🦆🎨 Is a pond half full or half drained? Depends if you're optimistic.",
+    "🦆⏰ Time flies when you're having fun. Unlike me. I waddle.",
+    "🦆🌅 Every sunset is just the sun going for a swim. Change my mind.",
+    "🦆🧘 Inner peace? I just float. Same thing.",
+    "🦆🎓 PhD in Paddling. Master's in Quacking. Bachelor's in Vibing.",
+    "🦆🎪 Life's a circus and I'm just here for the bread crumbs.",
+    "🦆🔮 The future is uncertain. But bread? Bread is eternal.",
+    "🦆🎵 Do you ever just... quack into the void?",
+    "🦆🌌 We're all just ducks floating on a pond called Earth.",
+    "🦆💡 Eureka! ...wait, what was I thinking about?",
+    "🦆🎭 To quack or not to quack? That's not even a question.",
+    "🦆🏆 I may not be smart, but I'm buoyant. That counts for something.",
+    "🦆🌈 Every day above water is a good day.",
+    "🦆🧩 Solving the puzzle of existence one breadcrumb at a time."
 ]
 
 # Pre-calculate total weight for efficient random selection
@@ -142,6 +160,7 @@ TOTAL_WEIGHT = sum(weight for _, weight in DUCK_SOUNDS)
 
 # Track last response to avoid consecutive duplicates
 LAST_RESPONSE = None
+LAST_THOUGHT = None
 
 # Duck reasoning messages for when reasoning is enabled (OpenAI-compatible)
 DUCK_REASONING_MESSAGES = [
@@ -274,8 +293,29 @@ def select_duck_sound() -> str:
 def select_duck_thinking() -> str:
     """
     Select a random duck thinking message.
+    Prevents the same thought appearing twice in a row.
     """
-    return secrets.choice(DUCK_THINKING_MESSAGES)
+    global LAST_THOUGHT
+    
+    max_attempts = 10  # Prevent infinite loop
+    
+    for attempt in range(max_attempts):
+        thought = secrets.choice(DUCK_THINKING_MESSAGES)
+        
+        # Only accept if different from last thought
+        if thought != LAST_THOUGHT:
+            LAST_THOUGHT = thought
+            return thought
+    
+    # Fallback: return any thought different from last
+    for thought in DUCK_THINKING_MESSAGES:
+        if thought != LAST_THOUGHT:
+            LAST_THOUGHT = thought
+            return thought
+    
+    # Ultimate fallback (should never happen)
+    LAST_THOUGHT = "🦆💭 *thinking...*"
+    return LAST_THOUGHT
 
 class DuckMessage:
     """Represents a duck sound message in OpenAI format"""
