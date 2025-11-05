@@ -5,94 +5,125 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QLM - Quack Language Model</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             max-width: 800px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 0;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            min-height: 100vh;
+            height: 100vh;
+            overflow: hidden;
         }
 
         .container {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border-radius: 20px;
-            padding: 30px;
+            margin: 10px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            height: calc(100vh - 20px);
+            display: flex;
+            flex-direction: column;
         }
 
-        h1 {
-            text-align: center;
-            font-size: 3em;
-            margin-bottom: 10px;
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            flex-shrink: 0;
+        }
+
+        .header h1 {
+            font-size: 1.5em;
+            margin: 0;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
-        .subtitle {
-            text-align: center;
-            font-size: 1.2em;
-            opacity: 0.9;
-            margin-bottom: 30px;
+        .header .duck-emoji {
+            font-size: 1.8em;
         }
 
-        .duck-emoji {
-            font-size: 4em;
-            text-align: center;
-            margin: 20px 0;
+        .header-subtitle {
+            font-size: 0.7em;
+            opacity: 0.7;
+            margin-left: 8px;
+        }
+
+        .header-subtitle::before {
+            content: " • ";
+            margin-right: 5px;
         }
 
         .chat-container {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 15px;
+            flex: 1;
+            overflow-y: auto;
             padding: 20px;
-            margin: 20px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
         .message {
-            margin: 15px 0;
-            padding: 15px;
-            border-radius: 10px;
-            animation: fadeIn 0.5s ease-in;
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            animation: fadeIn 0.3s ease-in;
+            word-wrap: break-word;
         }
 
         .user-message {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(102, 126, 234, 0.6);
+            align-self: flex-end;
             text-align: right;
         }
 
         .duck-message {
             background: rgba(255, 215, 0, 0.3);
-            color: #333;
-            font-weight: bold;
-            font-size: 1.2em;
+            color: #fff;
+            font-weight: 500;
+            align-self: flex-start;
+        }
+
+        .input-section {
+            padding: 15px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            flex-shrink: 0;
         }
 
         .input-container {
             display: flex;
             gap: 10px;
-            margin: 20px 0;
+            align-items: center;
         }
 
         input {
             flex: 1;
-            padding: 15px;
+            padding: 12px 16px;
             border: none;
-            border-radius: 25px;
+            border-radius: 20px;
             font-size: 1em;
             outline: none;
+            background: rgba(255, 255, 255, 0.9);
         }
 
         button {
-            padding: 15px 25px;
+            padding: 12px 20px;
             border: none;
-            border-radius: 25px;
+            border-radius: 20px;
             background: #ff6b35;
             color: white;
             font-size: 1em;
             cursor: pointer;
             transition: background 0.3s;
+            font-weight: 500;
         }
 
         button:hover {
@@ -100,61 +131,42 @@
         }
 
         button:disabled {
-            background: #ccc;
+            background: #999;
             cursor: not-allowed;
         }
 
-        .loading {
-            text-align: center;
-            font-style: italic;
-            color: #ffd700;
-        }
-
-        .stats {
-            text-align: center;
-            margin-top: 30px;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-        }
-
-        .stats p {
-            margin: 5px 0;
-        }
-
         .controls {
-            margin: 20px 0;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 0.85em;
         }
 
         .thinking-toggle {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 10px;
-            font-size: 1.1em;
-            font-weight: bold;
-            color: #ffd700;
-            margin-bottom: 5px;
+            gap: 6px;
+            cursor: pointer;
+            opacity: 0.8;
+        }
+
+        .thinking-toggle:hover {
+            opacity: 1;
         }
 
         .thinking-toggle input[type="checkbox"] {
-            transform: scale(1.2);
+            cursor: pointer;
         }
 
-        .controls small {
-            display: block;
-            font-size: 0.9em;
-            opacity: 0.8;
-            color: #ccc;
+        .status-indicator {
+            font-size: 0.85em;
+            opacity: 0.7;
         }
 
         .duck-message {
             white-space: pre-line;
-            line-height: 1.5;
+            line-height: 1.4;
         }
 
         @keyframes fadeIn {
@@ -178,47 +190,114 @@
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
         }
+
+        /* Mobile responsive styles */
+        @media (max-width: 768px) {
+            body {
+                max-width: 100%;
+            }
+
+            .container {
+                margin: 0;
+                border-radius: 0;
+                height: 100vh;
+            }
+
+            .header {
+                padding: 12px 16px;
+            }
+
+            .header h1 {
+                font-size: 1.2em;
+            }
+
+            .header .duck-emoji {
+                font-size: 1.5em;
+            }
+
+            .chat-container {
+                padding: 15px;
+            }
+
+            .message {
+                max-width: 85%;
+                padding: 10px 14px;
+                font-size: 0.95em;
+            }
+
+            .input-section {
+                padding: 12px 16px;
+            }
+
+            input {
+                padding: 10px 14px;
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+
+            button {
+                padding: 10px 16px;
+            }
+
+            .controls {
+                font-size: 0.8em;
+                flex-wrap: wrap;
+            }
+
+            .thinking-toggle {
+                gap: 4px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.1em;
+            }
+
+            .message {
+                max-width: 90%;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🦆 QLM</h1>
-        <p class="subtitle">Quack Language Model</p>
-
-        <div class="duck-emoji">🦆</div>
+        <div class="header">
+            <span class="duck-emoji">🦆</span>
+            <h1>QLM<span class="header-subtitle">Quack Language Model</span></h1>
+        </div>
 
         <div class="chat-container" id="chatContainer">
             <div class="message user-message">
-                <strong>You:</strong> Hello! Can you help me with some programming?
+                Hello! Can you help me with some programming?
             </div>
         </div>
 
-        <div class="input-container">
-            <input type="text" id="messageInput" placeholder="Ask QLM anything..." maxlength="500">
-            <button onclick="sendMessage()" id="sendButton">Send</button>
-        </div>
-
-        <div class="controls">
-            <label class="thinking-toggle">
-                <input type="checkbox" id="thinkingToggle">
-                <span>🦆 Duck Thinking Mode</span>
-            </label>
-            <small>Enable silly duck-themed thinking messages before responses</small>
+        <div class="input-section">
+            <div class="input-container">
+                <input type="text" id="messageInput" placeholder="Message QLM..." maxlength="500">
+                <button onclick="sendMessage()" id="sendButton">Send</button>
+            </div>
+            <div class="controls">
+                <label class="thinking-toggle">
+                    <input type="checkbox" id="thinkingToggle">
+                    <span>🦆 Duck Thinking</span>
+                </label>
+                <span class="status-indicator" id="status">Ready</span>
+            </div>
         </div>
 
         <div id="easterEgg" class="easter-egg">
             🎉 You're absolutely right! 🎉
         </div>
-
-        <div class="stats">
-            <p><strong>Model:</strong> quack-model</p>
-            <p><strong>Status:</strong> <span id="status">Ready</span></p>
-            <p><strong>Messages:</strong> <span id="messageCount">0</span></p>
-        </div>
     </div>
 
     <script>
-        let messageCount = 0;
         const recentResponses = []; // Track last 5 responses to avoid duplicates
         const MAX_RECENT = 5;
 
@@ -304,6 +383,16 @@
             return 'quack';
         }
 
+        // Detect if we're running with API or standalone
+        async function hasAPI() {
+            try {
+                const response = await fetch('/health', { method: 'GET' });
+                return response.ok;
+            } catch {
+                return false;
+            }
+        }
+
         async function sendMessage() {
             const input = document.getElementById('messageInput');
             const button = document.getElementById('sendButton');
@@ -323,49 +412,76 @@
             input.value = '';
 
             try {
-                // Simulate API thinking time
-                await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 1000));
-
-                // Check for enhanced response first
-                let finalResponse = checkEnhancedResponse(message);
-                const isRickRoll = finalResponse !== null;
+                // Check if API is available
+                const apiAvailable = await hasAPI();
                 
-                if (!finalResponse) {
-                    // Normal duck sound generation
-                    finalResponse = selectDuckSound();
+                if (apiAvailable) {
+                    // Use real API
+                    const thinkingEnabled = document.getElementById('thinkingToggle').checked;
+                    const response = await fetch('/chat/completions', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer sk-v1-42test'
+                        },
+                        body: JSON.stringify({
+                            model: 'quack-model',
+                            messages: [{ role: 'user', content: message }],
+                            quack_thinking: thinkingEnabled
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`API error: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    const finalResponse = data.choices[0].message.content;
+                    
+                    addMessage(finalResponse, 'duck');
+                } else {
+                    // Fallback to local emulation
+                    await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 1000));
+
+                    // Check for enhanced response first
+                    let finalResponse = checkEnhancedResponse(message);
+                    const isRickRoll = finalResponse !== null;
+                    
+                    if (!finalResponse) {
+                        // Normal duck sound generation
+                        finalResponse = selectDuckSound();
+                    }
+
+                    // Add thinking message if enabled
+                    const thinkingEnabled = document.getElementById('thinkingToggle').checked;
+                    if (thinkingEnabled && !isRickRoll) {
+                        const thinkingMessages = [
+                            '🦆💦 splash... quack... splash...',
+                            '🦆💭 Hmm... bread? No. Let\'s think about this...',
+                            '🦆🫧 *bubbling thoughts*',
+                            '🦆🔍 *inspecting the pond*',
+                            '🦆💬 ...uhm... maybe a grain of corn?',
+                            '🦆🧠 *pond-ering the question*',
+                            '🦆🔧 ...initiating quack analysis...',
+                            '🦆💦 *waddle waddle* Okay! Here\'s what I found:',
+                            '🦆🌀 *spinning in thought circles*',
+                            '🦆👀 *looking around suspiciously*',
+                            '🦆📝 *making mental notes*',
+                            '🦆⚡ *brain quack activated*',
+                            '🦆🎯 *targeting the perfect response*',
+                            '🦆🛁 *rubber duck debugging mode*',
+                            '🦆🌟 *diving deep into thought*'
+                        ];
+                        const thinkingMessage = thinkingMessages[Math.floor(Math.random() * thinkingMessages.length)];
+                        finalResponse = `${thinkingMessage}\n\n${finalResponse}`;
+                    }
+
+                    // Check if this is the random easter egg
+                    const isRandomEasterEgg = finalResponse === "You're absolutely right!";
+                    
+                    addMessage(finalResponse, 'duck', isRandomEasterEgg || isRickRoll);
                 }
 
-                // Add thinking message if enabled
-                const thinkingEnabled = document.getElementById('thinkingToggle').checked;
-                if (thinkingEnabled && !isRickRoll) {
-                    const thinkingMessages = [
-                        '🦆💦 splash... quack... splash...',
-                        '🦆💭 Hmm... bread? No. Let\'s think about this...',
-                        '🦆🫧 *bubbling thoughts*',
-                        '🦆🔍 *inspecting the pond*',
-                        '🦆💬 ...uhm... maybe a grain of corn?',
-                        '🦆🧠 *pond-ering the question*',
-                        '🦆🔧 ...initiating quack analysis...',
-                        '🦆💦 *waddle waddle* Okay! Here\'s what I found:',
-                        '🦆🌀 *spinning in thought circles*',
-                        '🦆👀 *looking around suspiciously*',
-                        '🦆📝 *making mental notes*',
-                        '🦆⚡ *brain quack activated*',
-                        '🦆🎯 *targeting the perfect response*',
-                        '🦆🛁 *rubber duck debugging mode*',
-                        '🦆🌟 *diving deep into thought*'
-                    ];
-                    const thinkingMessage = thinkingMessages[Math.floor(Math.random() * thinkingMessages.length)];
-                    finalResponse = `${thinkingMessage}\n\n${finalResponse}`;
-                }
-
-                // Check if this is the random easter egg
-                const isRandomEasterEgg = finalResponse === "You're absolutely right!";
-                
-                addMessage(finalResponse, 'duck', isRandomEasterEgg || isRickRoll);
-
-                messageCount++;
-                document.getElementById('messageCount').textContent = messageCount;
                 status.textContent = 'Ready';
 
             } catch (error) {
@@ -384,7 +500,7 @@
             const messageDiv = document.createElement('div');
 
             messageDiv.className = `message ${type}-message`;
-            messageDiv.innerHTML = `<strong>${type === 'user' ? 'You' : 'QLM'}:</strong> ${content}`;
+            messageDiv.textContent = content;
 
             chatContainer.appendChild(messageDiv);
 
