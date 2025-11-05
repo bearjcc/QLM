@@ -6,8 +6,10 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy API code
+# Copy API code and frontend
 COPY api/ ./api/
+COPY frontend/ ./frontend/
+COPY ascii_ducks/ ./ascii_ducks/
 
 # Expose port (Hugging Face uses 7860)
 EXPOSE 7860
