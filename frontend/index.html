@@ -16,7 +16,8 @@
             padding: 0;
             background: linear-gradient(135deg, #4A90A4 0%, #6DBAA8 50%, #86C8BC 100%);
             color: white;
-            height: 100vh;
+            height: 100vh; /* Fallback for older browsers */
+            height: 100dvh; /* Dynamic viewport height for mobile */
             overflow: hidden;
         }
 
@@ -26,7 +27,8 @@
             border-radius: 20px;
             margin: 10px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            height: calc(100vh - 20px);
+            height: calc(100vh - 20px); /* Fallback for older browsers */
+            height: calc(100dvh - 20px); /* Dynamic viewport height for mobile */
             display: flex;
             flex-direction: column;
         }
@@ -379,7 +381,8 @@
             .container {
                 margin: 0;
                 border-radius: 0;
-                height: 100vh;
+                height: 100vh; /* Fallback for older browsers */
+                height: 100dvh; /* Dynamic viewport height for mobile */
             }
 
             .header {
